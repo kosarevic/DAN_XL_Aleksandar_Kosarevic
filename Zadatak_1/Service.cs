@@ -25,8 +25,8 @@ namespace Zadatak_1
             p.Format = format[r.Next(0, 2)];
             p.Color = Program.colors[r.Next(0, Program.colors.Count())];
             p.Orientation = orientation[r.Next(0, 2)];
-            Console.WriteLine("{0} has sent {1} format print request",Thread.CurrentThread.Name, p.Format);
-            Console.WriteLine("color: {0}, orientation: {1}", p.Color, p.Orientation);
+            Console.WriteLine("{0} has sent {1} format print request.", Thread.CurrentThread.Name, p.Format);
+            Console.WriteLine("color: {0}, orientation: {1}.", p.Color, p.Orientation);
             if (p.Format == "A3")
             {
                 PrintA3(p);
@@ -41,12 +41,10 @@ namespace Zadatak_1
         {
             smp1.Wait();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Printing A3, for {0}", Thread.CurrentThread.Name);
+            Console.WriteLine("Printing A3, for {0}...", Thread.CurrentThread.Name);
             Console.ResetColor();
             Thread.Sleep(1000);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Printing A3 for {0} completed.", Thread.CurrentThread.Name);
-            Console.ResetColor();
+            PrintingDoneA3(Thread.CurrentThread.Name);
             smp1.Release();
         }
 
@@ -54,13 +52,37 @@ namespace Zadatak_1
         {
             smp2.Wait();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Printing A4, for {0}", Thread.CurrentThread.Name);
+            Console.WriteLine("Printing A4, for {0}...", Thread.CurrentThread.Name);
             Console.ResetColor();
             Thread.Sleep(1000);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Printing A4 for {0} completed.", Thread.CurrentThread.Name);
-            Console.ResetColor();
+            PrintingDoneA4(Thread.CurrentThread.Name);
             smp2.Release();
+        }
+
+        public delegate void Notification();
+
+        public static event Notification OnNotification;
+
+        public static void PrintingDoneA3(string format)
+        {
+            OnNotification = () =>
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Printing A3 for {0} completed.", format);
+                Console.ResetColor();
+            };
+            OnNotification.Invoke();
+        }
+
+        public static void PrintingDoneA4(string format)
+        {
+            OnNotification = () =>
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Printing A4 for {0} completed.", format);
+                Console.ResetColor();
+            };
+            OnNotification.Invoke();
         }
     }
 }
