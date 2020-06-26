@@ -11,22 +11,11 @@ namespace Zadatak_1
     {
         public static SemaphoreSlim smp1 = new SemaphoreSlim(1);
         public static SemaphoreSlim smp2 = new SemaphoreSlim(1);
-        public static Random r = new Random();
+        public static bool pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10 = false;
+        public static EventWaitHandle ewh = new AutoResetEvent(false);
 
-        public static void Pc()
+        public static void Pc(Printer p)
         {
-            string[] format = new string[2];
-            format[0] = "A3";
-            format[1] = "A4";
-            string[] orientation = new string[2];
-            orientation[0] = "Portrait";
-            orientation[1] = "Landscape";
-            Printer p = new Printer();
-            p.Format = format[r.Next(0, 2)];
-            p.Color = Program.colors[r.Next(0, Program.colors.Count())];
-            p.Orientation = orientation[r.Next(0, 2)];
-            Console.WriteLine("{0} has sent {1} format print request.", Thread.CurrentThread.Name, p.Format);
-            Console.WriteLine("color: {0}, orientation: {1}.", p.Color, p.Orientation);
             if (p.Format == "A3")
             {
                 PrintA3(p);
@@ -45,7 +34,9 @@ namespace Zadatak_1
             Console.ResetColor();
             Thread.Sleep(1000);
             PrintingDoneA3(Thread.CurrentThread.Name);
+            ValidatePC(Thread.CurrentThread.Name);
             smp1.Release();
+            ewh.Set();
         }
 
         public static void PrintA4(Printer printer)
@@ -56,7 +47,9 @@ namespace Zadatak_1
             Console.ResetColor();
             Thread.Sleep(1000);
             PrintingDoneA4(Thread.CurrentThread.Name);
+            ValidatePC(Thread.CurrentThread.Name);
             smp2.Release();
+            ewh.Set();
         }
 
         public delegate void Notification();
@@ -83,6 +76,25 @@ namespace Zadatak_1
                 Console.ResetColor();
             };
             OnNotification.Invoke();
+        }
+
+        public static void ValidatePC(string s)
+        {
+            if(s == "PC_1") { pc1 = true; }
+            else if(s == "PC_2") { pc2 = true; }
+            else if (s == "PC_3") { pc3 = true; }
+            else if (s == "PC_4") { pc4 = true; }
+            else if (s == "PC_5") { pc5 = true; }
+            else if (s == "PC_6") { pc6 = true; }
+            else if (s == "PC_7") { pc7 = true; }
+            else if (s == "PC_8") { pc8 = true; }
+            else if (s == "PC_9") { pc9 = true; }
+            else if (s == "PC_10") { pc10 = true; }
+            
+            if(pc1 && pc2 && pc3 && pc4 && pc5 && pc6 && pc7 && pc8 && pc9 && pc10)
+            {
+                Program.all = true;
+            }
         }
     }
 }
